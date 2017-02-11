@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
+    <title></title>
+    <style type="text/css">
+    </style>
+    <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css"/>
+    <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+    <div data-role="page" id="page1">
+        <div data-role="header" data-theme="b">
+            <h1>记事本</h1>
+            <a href="#page2" class="ui-btn-right" >新增</a>
+        </div>
+        <div data-role="content">
+            <ul data-role="listview">
+                <li style="background:#749CC3;color: #fff;">
+                    全部记事本内容<span class="ui-li-count" id="s1">0</span>
+                </li>
+                <li><a href="#page3" id="btn1">散文<span class="ui-li-count" id="s2">0</span></a></li>
+                <li><a href="#page3" id="btn2">随笔<span class="ui-li-count" id="s3">0</span></a></li>
+            </ul>
+        </div>
+        <div data-role="footer" data-theme="b">
+            <h1>©2015 rttop.cn studio</h1>
+        </div>
+    </div>
+    <div data-role="page" id="page2">
+        <div data-role="header" data-theme="b">
+            <a href="#page1">返回</a>
+            <h1>增加记事</h1>
+            <a href="#page3" class="save">保存</a>
+        </div>
+        <div data-role="content">
+            <label>类型：</label>
+            <div data-role="controlgroup" data-type="horizontal">
+                <a href="#" data-role="button" class="btnS">散文</a>
+                <a href="#" data-role="button" class="btnB">随笔</a>
+            </div>
+            <label for="t0">标题：</label>
+            <input type="text" class="title" id="t0"/>
+            <label for="t">正文：</label>
+            <textarea class="txt" id="t"></textarea>
+        </div>
+        <div data-role="footer" data-theme="b">
+            <h1>©2015 rttop.cn studio</h1>
+        </div>
+    </div>
+    <div data-role="page" id="page3">
+        <div data-role="header" data-theme="b">
+            <a href="#page1">返回</a>
+            <h1>记事列表</h1>
+            <a href="#page2">新增</a>
+        </div>
+        <div data-role="content">
+            <ul id="con1" data-role="listview" data-icon="false" data-inset="true"  data-filter="true"></ul>
+        </div>
+        <div data-role="footer" data-theme="b">
+            <h1>©2015 rttop.cn studio</h1>
+        </div>
+    </div>
+    <div data-role="page" id="page4">
+        <div data-role="header" data-theme="b">
+            <a href="#page5" data-role="button" id="chg">修改</a>
+            <h1 id="h"></h1>
+            <a href="#page3" data-role="button" id="del">删除</a>
+        </div>
+        <div data-role="content">
+            <h3 style="text-align: center;" id="tit"></h3>
+            <hr/>
+            <div id="con"></div>
+        </div>
+        <div data-role="footer" data-theme="b">
+            <h1>©2015 rttop.cn studio</h1>
+        </div>
+    </div>
+    <div data-role="page" id="page5">
+        <div data-role="header" data-theme="b">
+            <a href="#page1">返回</a>
+            <h1>编辑记事</h1>
+            <a href="#page3" id="save2">更新</a>
+        </div>
+        <div data-role="content">
+            <label>类型：</label>
+            <div data-role="controlgroup" data-type="horizontal">
+                <a href="#" data-role="button" class="btnS">散文</a>
+                <a href="#" data-role="button" class="btnB">随笔</a>
+            </div>
+            <label for="t1">标题：</label>
+            <input type="text" class="title" id="t1"/>
+            <label for="t2">正文：</label>
+            <textarea class="txt" id="t2"></textarea>
+        </div>
+        <div data-role="footer" data-theme="b">
+            <h1>©2015 rttop.cn studio</h1>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var indexAll = 0;
+        var local = {
+            setI:function(key,value){
+                localStorage.setItem(key,value);
+            },
+            getI:function(key){
+                return localStorage.getItem(key);
+            }
+        };
+        local.setI("flag","1");
+        var $btnS = $(".btnS"),$btnB = $(".btnB"),$title = $(".title"),$txt=$(".txt"),$save = $(".save"),
+            $con1 = $("#con1"),$s1 = $("#s1"),$s2 = $("#s2"),$s3 = $("#s3"),$btn1=$("#btn1"),$btn2=$("#btn2");
+        $s1.html(getNum("san")+getNum("bii"));
+        $s2.html(getNum("san"));
+        $s3.html(getNum("bii"));
+        function btnColor(btn1,btn2){
+            btn1.css({"background":"#fff","color":"#000"});
+            btn2.css({"background":"#66A1D0","color":"#fff"});
+        }
+        function getNum(s){
+            var num = 0;
+            for (var intI = 0; intI < localStorage.length; intI++) {
+                var strKey = localStorage.key(intI);
+                if (strKey.substring(0, 3) == "obj") {
+                    var o = JSON.parse(local.getI(strKey));
+                    if (o.id == s) {
+                        num++;
+                    }
+                }
+            }
+            return num;
+        }
+        function addPage(s){
+            var obj = {"title":$title.val(),"con":$txt.val(),"id":s};
+            var str = JSON.stringify(obj);
+            var date = new Date();
+            var name = "obj"+date.getTime();
+            local.setI(name,str);
+        }
+        function comm(fun){
+            for (var intI = 0; intI < localStorage.length; intI++) {
+                var strKey = localStorage.key(intI);
+                if(strKey.substring(0,3)=="obj"){
+                    var o = JSON.parse(local.getI(strKey));
+                    fun(o,strKey);
+                }
+            }
+        }
+        function addIndex(s,str) {
+                var index = 0;
+                var Html = '<li><a style="background:#749CC3;color: #fff;"><span>' + s + '</span><span class="ui-li-count" id="num"></span></a></li>';
+                comm(function(o,strKey){
+                    if (o.id == str) {
+                        index++;
+                        Html += '<li><a class="aa" href="#page4" data-code="' + strKey + '">' + o.title + '</a></li>';
+                    }
+                });
+            $con1.html(Html).listview("refresh");
+            $("#num").html(index);
+        }
+        function clickA(){
+            $(".aa").bind("click",function(){
+                local.setI('change',local.getI($(this).attr("data-code")));
+            })
+        }
+        $btnS.bind("click",function(){
+            local.setI("flag","1");
+            btnColor($btnB,$(this));
+        });
+        $btnB.bind("click",function(){
+            local.setI("flag","0");
+            btnColor($btnS,$(this));
+        });
+        $("#page1").bind("pageshow",function(){
+            $s1.html(getNum("san")+getNum("bii"));
+            $s2.html(getNum("san"));
+            $s3.html(getNum("bii"));
+            $btn1.bind("click",function(){
+                local.setI("flag","1");
+            });
+            $btn2.bind("click",function(){
+                local.setI("flag","0");
+            })
+        });
+        $("#page2").bind("pagebeforeshow",function(){
+            $save.bind("click",function() {
+                if($title.val()&&$txt.val()){
+                    if (local.getI("flag") == "1") {
+                        addPage("san");
+                    }
+                    if (local.getI("flag") == "0") {
+                        addPage("bii");
+                    }
+                }
+                else{
+                    alert("请输入内容");
+                }
+            });
+        });
+        $("#page3").bind("pageshow",function(){
+            $con1.html(" ");
+            if(local.getI("flag") == "1"){
+                addIndex("散文","san");
+                clickA();
+            }
+            else if(local.getI("flag") == "0"){
+                addIndex("随笔","bii");
+                clickA();
+            }
+        });
+        $("#page4").bind("pagebeforeshow",function(){
+            var o = JSON.parse(local.getI('change'));
+            if(o.id&&o.id == "san"){
+                $("#h").html("散文");
+            }
+            if(o.id&&o.id == "bii"){
+                $("#h").html("随笔");
+            }
+            $("#tit").html(o.title);
+            $("#con").html(o.con);
+            $("#del").bind("click",function(){
+                comm(function(o,strKey){
+                    var c = JSON.parse(local.getI("change"));
+                    if(o.title&& o.id&&o.title == c.title&& o.id == c.id&& strKey!="change"){
+                        localStorage.removeItem(strKey);
+                    }
+                })
+            })
+        });
+         $("#page5").bind("pagebeforeshow",function(){
+            var c = JSON.parse(local.getI("change"));
+            $("#t1").val(c.title);
+            $("#t2").val(c.con);
+            if(local.getI("flag")=="0"){
+                btnColor($btnS,$btnB);
+            }
+            else{
+                btnColor($btnB,$btnS);
+            }
+            $("#save2").bind("click",function(){
+                var id = "";
+                comm(function(o,strKey){
+                    if(o.title == c.title && o.con== c.con && o.id == c.id&& strKey!="change"){
+                        if(local.getI("flag")=="1"){
+                            id="san";
+                        }
+                        else id = "bii";
+                        var obj = {"title":$("#t1").val(),"con":$("#t2").val(),"id": id};
+                        var str = JSON.stringify(obj);
+                        local.setI(strKey,str);
+                    }
+                })
+            })
+        });
+    </script>
+</body>
+</html>
